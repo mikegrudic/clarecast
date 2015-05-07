@@ -1,10 +1,9 @@
 import urllib, urllib2, re
-from numpy import prod
 import string
 from time import sleep
 import easygui
 
-def CheckPage(last_post=None):
+def GetPostsAndTimes():
     req = urllib2.Request("https://www.facebook.com/centralcasting")
     response = urllib2.urlopen(req)
     page = response.read()
@@ -14,14 +13,28 @@ def CheckPage(last_post=None):
     pposts = []
     times = []
     for p in posts[9:]:
-        #time = re.split('data-utime="|"',p)[2]
         if 'data-utime="' in p:
             times.append(int(p.split('data-utime="')[1].split('"')[0]))
             pposts.append(string.join(re.split('<p>|</p>',p)[1::2]))
 
     pposts = [x for (y,x) in sorted(zip(times,pposts))]
+    return pposts[::-1], sorted(times)[::-1]
 
-    most_recent = pposts[-1]
+def ShowOldPosts():
+    posts, times = GetPostsAndTimes()
+    for p in posts:
+        pl = p.lower()
+        nonunion = "non union" in pl
+        sex = "female" in pl or "women" in pl
+        ethnicity = "ethnicity" in pl or "caucasian" in pl
+        if nonunion and sex and ethnicity:
+            easygui.msgbox(p, title="Casting call!")
+        
+    
+def CheckPage(last_post=None):
+    pposts, times = GetPostsAndTimes()
+    
+    most_recent = pposts[0]
 
     if most_recent == last_post:
         return None
@@ -30,12 +43,13 @@ def CheckPage(last_post=None):
         nonunion = "non union" in pl
         sex = "female" in pl or "women" in pl
         ethnicity = "ethnicity" in pl or "caucasian" in pl
-#        if nonunion and sex and ethnicity:
-        return most_recent
+        if True:#        if nonunion and sex and ethnicity:
+            return most_recent
 
     return None
-
+    
 def main():
+    ShowOldPosts()
     post = None
     while True:
         newpost = CheckPage(post)
