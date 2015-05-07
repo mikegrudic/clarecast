@@ -24,7 +24,7 @@ def ShowOldPosts():
     posts, times = GetPostsAndTimes()
     for p in posts:
         pl = p.lower()
-        nonunion = "non union" in pl
+        nonunion = "non union" in pl.replace('-',' ')
         sex = "female" in pl or "women" in pl
         ethnicity = "ethnicity" in pl or "caucasian" in pl
         if nonunion and sex and ethnicity:
@@ -40,10 +40,10 @@ def CheckPage(last_post=None):
         return None
     else:
         pl = most_recent.lower()
-        nonunion = "non union" in pl
+        nonunion = "non union" in pl.replace("-", " ")
         sex = "female" in pl or "women" in pl
         ethnicity = "ethnicity" in pl or "caucasian" in pl
-        if True:#        if nonunion and sex and ethnicity:
+        if nonunion and sex and ethnicity:
             return most_recent
 
     return None
