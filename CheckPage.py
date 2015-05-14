@@ -20,14 +20,20 @@ def GetPostsAndTimes():
     pposts = [x for (y,x) in sorted(zip(times,pposts))]
     return pposts[::-1], sorted(times)[::-1]
 
+def IsRelevant(post):
+    if unionness:
+        union_check = ("union" in post) and (not "non union" in post.replace("-", " "))
+    else:
+        union_check = "non union" in post.replace("-", " ")
+    sex_check = sum([w in post for w in sex_words])
+    eth_check = sum([w in post for w in eth_words])
+    return union_check and sex_check and eth_check
+    
 def ShowOldPosts():
     posts, times = GetPostsAndTimes()
     for p in posts:
         pl = p.lower()
-        nonunion = "non union" in pl.replace('-',' ')
-        sex = "female" in pl or "women" in pl
-        ethnicity = "ethnicity" in pl or "caucasian" in pl
-        if nonunion and sex and ethnicity:
+        if IsRelevant(pl):
             easygui.msgbox(p, title="Casting call!")
         
     
@@ -40,10 +46,7 @@ def CheckPage(last_post=None):
         return None
     else:
         pl = most_recent.lower()
-        nonunion = "non union" in pl.replace("-", " ")
-        sex = "female" in pl or "women" in pl
-        ethnicity = "ethnicity" in pl or "caucasian" in pl
-        if nonunion and sex and ethnicity:
+        if IsRelevant(pl):
             return most_recent
 
     return None
@@ -63,4 +66,19 @@ def main():
         
 
 if __name__ == "__main__":
+    sex = easygui.buttonbox("Sex:", "Sex",["M","F","Yes"])
+    if sex == "Yes":
+        easygui.msgbox("ayy lmao")
+        sex = easygui.buttonbox("Sex:",None,["M","F"])
+    if sex == "M":
+        sex_words = 'male',' men'
+    else:
+        sex_words = 'female', 'women'
+        
+    unionness = easygui.buttonbox("Union or non-union?","Unionness",["Union","Non-union"]) == "union"
+    
+    eth_words = easygui.multenterbox("Please enter any terms applying to your ethnicity which you want to check for","Ethnicity",["","","","",""])
+    eth_words = [e.lower() for e in eth_words if len(e)>0]
+    eth_words.append("ethnicity")
+
     main()
