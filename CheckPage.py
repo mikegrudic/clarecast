@@ -22,7 +22,7 @@ def GetPostsAndTimes():
 
 def IsRelevant(post):
     if unionness:
-        union_check = ("union" in post) and (not "non union" in post.replace("-", " "))
+        union_check = True
     else:
         union_check = "non union" in post.replace("-", " ")
     sex_check = sum([w in post for w in sex_words])
